@@ -1,0 +1,97 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d0f14;
+  --bg-panel:  #13161e;
+  --bg-hover:  #1a1e28;
+  --bg-active: #1e2330;
+  --border:    #252a38;
+  --border-hi: #353d54;
+
+  --text:      #e2e6f0;
+  --text-dim:  #6b7494;
+  --text-mute: #3d4460;
+
+  --accent:    #5b8af5;
+  --accent-lo: #1e2d52;
+  --green:     #4ade80;
+  --green-lo:  #14291e;
+  --yellow:    #fbbf24;
+  --yellow-lo: #2a2010;
+  --red:       #f87171;
+  --red-lo:    #2a1414;
+  --purple:    #a78bfa;
+  --purple-lo: #1e1a2e;
+  --cyan:      #22d3ee;
+  --cyan-lo:   #0e2228;
+
+  --radius:    8px;
+  --radius-lg: 12px;
+  --font:      'Inter', system-ui, sans-serif;
+  --mono:      'JetBrains Mono', 'Fira Code', monospace;
+  --shadow:    0 4px 24px rgba(0,0,0,.4);
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
+
+/* ── Markdown content ─────────────────────────────────────────────────────── */
+.md h1, .md h2, .md h3 { color: var(--text); font-weight: 600; margin: 1em 0 .4em; }
+.md h1 { font-size: 1.3em; }
+.md h2 { font-size: 1.15em; }
+.md h3 { font-size: 1em; }
+.md p  { margin: .5em 0; }
+.md ul, .md ol { padding-left: 1.4em; margin: .4em 0; }
+.md li { margin: .2em 0; }
+.md code {
+  font-family: var(--mono);
+  font-size: .85em;
+  background: var(--bg-active);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .1em .35em;
+  color: var(--cyan);
+}
+.md pre {
+  background: var(--bg-active);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .9em 1em;
+  overflow-x: auto;
+  margin: .6em 0;
+}
+.md pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+}
+.md blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: .8em;
+  color: var(--text-dim);
+  margin: .5em 0;
+}
+.md table { border-collapse: collapse; width: 100%; margin: .6em 0; }
+.md th, .md td { border: 1px solid var(--border); padding: .4em .7em; text-align: left; }
+.md th { background: var(--bg-active); font-weight: 600; }
+.md a { color: var(--accent); text-decoration: none; }
+.md a:hover { text-decoration: underline; }
+.md hr { border: none; border-top: 1px solid var(--border); margin: .8em 0; }
+
+/* ── Utility ──────────────────────────────────────────────────────────────── */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }

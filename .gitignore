@@ -1,0 +1,10 @@
+﻿.env
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+node_modules/
+data/sessions/
+data/model_performance.json
+dist/
+.ruff_cache/

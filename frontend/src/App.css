@@ -1,0 +1,31 @@
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.server-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--yellow-lo);
+  border-bottom: 1px solid var(--yellow);
+  color: var(--yellow);
+  font-size: 13px;
+  padding: 8px 16px;
+  text-align: center;
+}
+.server-banner code {
+  font-family: var(--mono);
+  background: rgba(0,0,0,.3);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
