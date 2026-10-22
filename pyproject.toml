@@ -1,7 +1,7 @@
 [project]
 name = "weiping-council"
 version = "2.5.0"
-description = "Weiping Council multi-LLM deliberation system with 6 protocols: council, debate, red-team, consensus, specialist, tournament"
+description = "Ask several LLMs one question, let them review each other anonymously, and get a synthesized answer with dissent and per-call traces."
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.0",
