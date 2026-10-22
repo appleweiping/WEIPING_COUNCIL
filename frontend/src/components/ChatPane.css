@@ -50,6 +50,12 @@
 }
 .runtime-pill--degraded .runtime-dot { background: var(--yellow); }
 .runtime-pill--checking .runtime-dot { background: var(--text-mute); }
+.runtime-pill--demo {
+  border-color: #3a3f8f;
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+}
+.runtime-pill--demo .runtime-dot { background: #a5b4fc; }
 .runtime-meta {
   color: var(--text-mute);
   font-family: var(--mono);

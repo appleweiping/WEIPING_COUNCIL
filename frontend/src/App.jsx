@@ -63,7 +63,7 @@ export default function App() {
     <div className="app-shell">
       {serverOk === false && (
         <div className="server-banner">
-          ⚠ Backend not reachable — run <code>uvicorn backend.main:app --reload --port 8000</code>
+          ⚠ Backend not reachable — run <code>vc serve</code> (or <code>vc serve --demo</code>)
         </div>
       )}
       <Sidebar

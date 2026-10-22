@@ -18,7 +18,8 @@ from .config import CouncilConfig, ModelConfig
 
 
 PUBLIC_REDACTED = "...redacted"
-_PUBLIC_API_FORMATS = {"anthropic", "openai"}
+_PUBLIC_API_FORMATS = {"anthropic", "openai", "demo"}
+DEMO_MODEL_ID = "demo/canned-replies"
 _PUBLIC_MODEL_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:+-]*(?:/[A-Za-z0-9][A-Za-z0-9._:+-]*){0,3}")
 _PUBLIC_HIGH_RISK_TOKEN = re.compile(
     r"(?<![A-Za-z0-9])(?:"
@@ -298,6 +299,8 @@ class ProviderEndpoint:
 
     @property
     def ready(self) -> bool:
+        if self.api_format == "demo":
+            return True
         return bool(
             _runtime_text(self.model_id)
             and self.valid_base_url
@@ -307,6 +310,8 @@ class ProviderEndpoint:
 
     @property
     def missing(self) -> list[str]:
+        if self.api_format == "demo":
+            return []
         fields = []
         if not _runtime_text(self.model_id):
             fields.append("model_id")
@@ -372,8 +377,9 @@ class ModelCallTrace:
 @dataclass
 class RuntimeSettings:
     endpoints: dict[str, ProviderEndpoint] = field(default_factory=dict)
-    agentmemory_url: str = "http://localhost:3111"
+    agentmemory_url: str = ""
     agentmemory_secret: str = field(default="", repr=False)
+    demo: bool = False
     cors_origins: list[str] = field(default_factory=list)
     provider_timeout_seconds: float = 120.0
     provider_max_attempts: int = 3
@@ -389,6 +395,7 @@ class RuntimeSettings:
         dotenv_path: str | Path | None = None,
     ) -> "RuntimeSettings":
         source_env = merged_runtime_env(env, dotenv_path=dotenv_path)
+        demo = _runtime_text(source_env.get("VC_DEMO")).lower() in {"1", "true", "yes", "on"}
         endpoints = {}
         for model in config.models:
             role_key = _role_env(model.role)
@@ -425,6 +432,19 @@ class RuntimeSettings:
                 source = f"{source} + VC_PROVIDER_{role_key}_*"
             resolved = {field: role_overrides[field] or value for field, value in base.items()}
 
+            if demo:
+                # Demo mode replays canned replies (backend/demo.py) and never
+                # sends a request, so no endpoint or key is needed.
+                endpoints[model.role] = ProviderEndpoint(
+                    role=model.role,
+                    model_name=model.name,
+                    model_id=DEMO_MODEL_ID,
+                    base_url="",
+                    api_key="",
+                    api_format="demo",
+                    source="VC_DEMO",
+                )
+                continue
             endpoints[model.role] = ProviderEndpoint(
                 role=model.role,
                 model_name=model.name,
@@ -446,9 +466,9 @@ class RuntimeSettings:
 
         return cls(
             endpoints=endpoints,
-            agentmemory_url=_runtime_text(
-                source_env.get("AGENTMEMORY_URL"), "http://localhost:3111"
-            ),
+            # agentmemory recall is opt-in; demo mode never calls it.
+            agentmemory_url="" if demo else _runtime_text(source_env.get("AGENTMEMORY_URL")),
+            demo=demo,
             agentmemory_secret=_runtime_text(source_env.get("AGENTMEMORY_SECRET")),
             cors_origins=cors_origins,
             provider_timeout_seconds=_bounded_float(

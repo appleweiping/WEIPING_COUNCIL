@@ -113,10 +113,9 @@ class AgentMemoryClient:
         )
         if base_url is not None:
             configured_url = base_url
-        elif "AGENTMEMORY_URL" in env:
-            configured_url = env["AGENTMEMORY_URL"]
         else:
-            configured_url = "http://localhost:3111"
+            # Recall is opt-in: without AGENTMEMORY_URL nothing is contacted.
+            configured_url = env.get("AGENTMEMORY_URL", "")
         self.base_url = (
             configured_url.strip().rstrip("/") if isinstance(configured_url, str) else ""
         )

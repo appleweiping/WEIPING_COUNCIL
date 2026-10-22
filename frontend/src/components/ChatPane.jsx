@@ -15,6 +15,15 @@ const PROTOCOLS = [
 
 function RuntimeStatus({ health }) {
   if (!health) return <span className="runtime-pill runtime-pill--checking">checking</span>
+  if (health.demo) {
+    return (
+      <div className="runtime-pill runtime-pill--demo" title="Started with --demo: replies are canned and no model is called">
+        <span className="runtime-dot" />
+        <span>demo</span>
+        <span className="runtime-meta">canned replies</span>
+      </div>
+    )
+  }
   const providers = health.providers || []
   const ready = providers.filter(p => p.ready).length
   const total = providers.length
@@ -42,6 +51,12 @@ export default function ChatPane({ session, onResult, serverHealth }) {
   // Stop the browser wait if this view unmounts. This does not claim that an
   // already-dispatched provider run was cancelled on the server.
   useEffect(() => () => abortRef.current?.abort(), [])
+
+  // In demo mode, offer the sample question the canned replies were written for.
+  const demoQuestion = serverHealth?.demo?.question
+  useEffect(() => {
+    if (demoQuestion) setQuery(q => q || demoQuestion)
+  }, [demoQuestion])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -119,7 +134,7 @@ export default function ChatPane({ session, onResult, serverHealth }) {
           <div className="chat-empty">
             <div className="empty-icon">⚡</div>
             <div className="empty-title">Weiping Council</div>
-            <div className="empty-sub">Ask anything. Choose a protocol. Get a deliberated answer.</div>
+            <div className="empty-sub">Several models answer, review each other anonymously, and a chairman writes the final answer.</div>
             <div className="empty-protocols">
               {PROTOCOLS.map(p => (
                 <button
@@ -179,7 +194,7 @@ export default function ChatPane({ session, onResult, serverHealth }) {
           <textarea
             ref={textareaRef}
             className="chat-textarea"
-            placeholder={`Ask the ${proto.label} council… (Enter to send, Shift+Enter for newline)`}
+            placeholder={`Ask a question (${proto.label} protocol; Enter to send, Shift+Enter for newline)`}
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}

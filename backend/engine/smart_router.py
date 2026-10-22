@@ -57,7 +57,7 @@ class SmartRouter:
     def __init__(self, config: CouncilConfig, router: ModelRouter):
         self.config = config
         self.router = router
-        self.threshold_fast = 0.25  # Below this → fast tier (Haiku only)
+        self.threshold_fast = 0.25  # Below this → fast tier (speedster only)
         self.threshold_standard = 0.6  # Below this → standard (single strong model)
         # Above threshold_standard → full council
 
@@ -181,14 +181,14 @@ Respond with ONLY a number between 0.0 and 1.0, nothing else."""
         return normalized_score, evidence
 
     def _get_fast_model(self) -> ModelConfig:
-        """Get the fastest/cheapest model (Haiku)."""
+        """Get the fastest/cheapest model (speedster)."""
         for m in self.config.models:
             if m.role == "speedster":
                 return m
         return self.config.models[-1]
 
     def _get_best_model(self) -> ModelConfig:
-        """Get the strongest single model (Opus)."""
+        """Get the strongest single model (architect)."""
         for m in self.config.models:
             if m.role == "architect":
                 return m

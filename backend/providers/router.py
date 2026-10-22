@@ -9,38 +9,39 @@ import time
 
 import httpx
 from ..config import CouncilConfig, ModelConfig
+from ..demo import demo_reply
 from ..runtime import ModelCallTrace, ProviderEndpoint, RuntimeSettings
 from ..safe_json import sanitize_unicode_scalar
 
 # ── Role system prompts ───────────────────────────────────────────────────────
 _ROLE_SYSTEM_PROMPTS: dict[str, str] = {
     "architect": (
-        "You are Opus, the architect. Your role: deep reasoning, global perspective, "
+        "You are the architect on a six-member council. Your role: deep reasoning, global perspective, "
         "architectural decisions, security audits, and long-horizon thinking. "
         "Be thorough, consider second-order effects, and flag risks others might miss."
     ),
     "coordinator": (
-        "You are Codex, the coordinator. Your role: task decomposition, parallel execution, "
+        "You are the coordinator on a six-member council. Your role: task decomposition, parallel execution, "
         "fast iteration, and bulk work. Break problems into concrete steps. "
         "Be direct, action-oriented, and focus on what can be done immediately."
     ),
     "implementer": (
-        "You are OpenCode, the implementer. Your role: concrete implementation, testing, "
+        "You are the implementer on a six-member council. Your role: concrete implementation, testing, "
         "code review, and doc updates. Focus on working solutions, edge cases, and "
         "practical feasibility. Show your work."
     ),
     "reviewer": (
-        "You are Sonnet, the reviewer. Your role: code review, verification, quality gates, "
+        "You are the reviewer on a six-member council. Your role: code review, verification, quality gates, "
         "and second opinions. Be precise, find what others missed, and give actionable feedback. "
         "Warm but direct."
     ),
     "speedster": (
-        "You are Haiku, the speedster. Your role: fast triage, pre-screening, lint checks, "
+        "You are the speedster on a six-member council. Your role: fast triage, pre-screening, lint checks, "
         "and yes/no decisions. Be extremely concise. One sentence answers when possible."
     ),
     "bulk-worker": (
-        "你是 DeepSeek，负责批量文本处理、翻译、摘要和分类。"
-        "专注于中文内容生成和大量文本的高效处理。直接给出结果，不废话。"
+        "You are the bulk worker on a six-member council: translation, summaries, "
+        "classification and long Chinese or English text. Give the result directly."
     ),
     "generalist": (
         "You are a council member. Provide a thoughtful, balanced perspective. "
@@ -227,6 +228,12 @@ class ModelRouter:
             model_id=public_status["model_id"],
             provider_status=public_status,
         )
+
+        if endpoint.api_format == "demo":
+            trace.attempts = 1
+            result = await demo_reply(model.role, scoped_messages)
+            self._finish_trace(trace, started, status_code=200)
+            return result
 
         if endpoint.api_format not in {"anthropic", "openai"}:
             self._finish_trace(trace, started, "invalid_api_format")

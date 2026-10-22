@@ -4,6 +4,7 @@ vc — Weiping Council CLI
 Multi-LLM deliberation from your terminal.
 
 Usage:
+  vc serve [--demo]               # API + web UI on http://127.0.0.1:8000
   vc                              # interactive REPL
   vc "your question"              # one-shot query (council protocol)
   vc "your question" -p debate    # specify protocol
@@ -12,6 +13,8 @@ Usage:
   vc models                       # list configured models
   vc protocols                    # list protocols
   vc status                       # check backend health
+
+Add --demo to any command to use canned replies instead of real models.
 """
 
 import argparse
@@ -537,6 +540,20 @@ def format_health_summary(data: dict) -> str:
     return "\n".join(lines)
 
 
+def cmd_serve(host: str, port: int):
+    import uvicorn
+
+    dist = Path(__file__).parent / "frontend" / "dist"
+    demo = os.environ.get("VC_DEMO") == "1"
+    print(f"\n  {c('WEIPING_COUNCIL', BOLD)}  {c(f'v{APP_VERSION}', DIM)}")
+    print(f"  {c('*', BGREEN)} http://{host}:{port}" + (c('  (demo mode: canned replies)', BYELLOW) if demo else ""))
+    if not dist.is_dir():
+        print(f"  {c('-', DIM)} web UI not built; run: cd frontend && npm ci && npm run build")
+        print(f"  {c('-', DIM)} the API is still available at http://{host}:{port}/docs")
+    print()
+    uvicorn.run("backend.main:app", host=host, port=port, log_level="warning")
+
+
 def cmd_status():
     import httpx
 
@@ -702,6 +719,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent("""
         Examples:
+          vc serve --demo                       # try the web UI without an API key
+          vc serve                              # web UI + API on http://127.0.0.1:8000
+          vc "Monolith or microservices?" --demo
           vc                                    # interactive REPL
           vc "What is the best way to learn Rust?"
           vc "Should I use microservices?" -p debate
@@ -717,7 +737,7 @@ def main():
     parser.add_argument(
         "query_or_cmd",
         nargs="?",
-        help="Query text, or: sessions / show / models / protocols / status",
+        help="Query text, or: serve / sessions / show / models / protocols / status",
     )
     parser.add_argument("session_id", nargs="?", help="Session ID (for 'show')")
     parser.add_argument(
@@ -730,8 +750,17 @@ def main():
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Show all stages and audit trail"
     )
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Use canned replies instead of calling models (no API key needed)",
+    )
+    parser.add_argument("--host", default="127.0.0.1", help="Host for serve")
+    parser.add_argument("--port", type=int, default=8000, help="Port for serve")
 
     args = parser.parse_args()
+    if args.demo:
+        os.environ["VC_DEMO"] = "1"
 
     # No args → interactive REPL
     if not args.query_or_cmd:
@@ -740,7 +769,9 @@ def main():
 
     cmd = args.query_or_cmd.lower()
 
-    if cmd == "sessions":
+    if cmd == "serve":
+        cmd_serve(args.host, args.port)
+    elif cmd == "sessions":
         cmd_sessions()
     elif cmd == "show":
         if not args.session_id:

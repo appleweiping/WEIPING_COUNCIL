@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 
-APP_VERSION = "2.4.1"
+APP_VERSION = "2.5.0"
 
 
 @dataclass
@@ -22,7 +22,7 @@ class CouncilConfig:
         default_factory=lambda: [
             ModelConfig(
                 id="architect",
-                name="Opus",
+                name="Architect",
                 role="architect",
                 provider="openrouter",
                 provider_model="openai/gpt-5.5",
@@ -30,7 +30,7 @@ class CouncilConfig:
             ),
             ModelConfig(
                 id="coordinator",
-                name="Codex",
+                name="Coordinator",
                 role="coordinator",
                 provider="openrouter",
                 provider_model="openai/gpt-5.5",
@@ -38,7 +38,7 @@ class CouncilConfig:
             ),
             ModelConfig(
                 id="implementer",
-                name="OpenCode",
+                name="Implementer",
                 role="implementer",
                 provider="openrouter",
                 provider_model="openai/gpt-5.5",
@@ -46,7 +46,7 @@ class CouncilConfig:
             ),
             ModelConfig(
                 id="reviewer",
-                name="Sonnet",
+                name="Reviewer",
                 role="reviewer",
                 provider="openrouter",
                 provider_model="openai/gpt-5.5",
@@ -54,7 +54,7 @@ class CouncilConfig:
             ),
             ModelConfig(
                 id="speedster",
-                name="Haiku",
+                name="Speedster",
                 role="speedster",
                 provider="openrouter",
                 provider_model="openai/gpt-5.5",
@@ -62,7 +62,7 @@ class CouncilConfig:
             ),
             ModelConfig(
                 id="bulk-worker",
-                name="DeepSeek",
+                name="Bulk worker",
                 role="bulk-worker",
                 provider="openrouter",
                 provider_model="deepseek/deepseek-chat",

@@ -125,6 +125,8 @@ class Orchestrator:
             warnings.append("Context recall is unavailable or degraded for this run.")
         if confidence_degraded:
             warnings.append("Model-reported confidence was invalid and has been clamped.")
+        if getattr(getattr(self.router, "settings", None), "demo", False):
+            warnings.append("Demo mode: replies are canned and no model was called.")
 
         result.metrics = metrics
         result.metrics["successful_model_calls"] = successful_calls

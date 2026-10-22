@@ -9,11 +9,13 @@ import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from .config import APP_VERSION, CouncilConfig
 from .council.orchestrator import Orchestrator
 from .council.session import Session
+from .demo import DEMO_QUESTION
 from .providers.router import ModelRouter
 from .runtime import RuntimeSettings, agentmemory_auth_headers, project_public_text
 from .safe_json import sanitize_unicode_scalar
@@ -126,6 +128,7 @@ async def _health_snapshot() -> dict:
         "providers": providers,
         "runtime_policy": settings.public_policy(),
         "agentmemory": agentmemory,
+        "demo": {"question": DEMO_QUESTION} if settings.demo else None,
         "degraded": degraded,
         "warnings": warnings,
     }
@@ -291,3 +294,10 @@ async def get_session(session_id: str):
     if payload is None:
         raise HTTPException(404, "Session not found")
     return payload
+
+
+# Serve the built UI (frontend/dist, from `npm run build`) on the same port so
+# `vc serve` is one process. Registered last so /api routes take precedence.
+FRONTEND_DIST = Path(__file__).parent.parent / "frontend" / "dist"
+if FRONTEND_DIST.is_dir():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="ui")

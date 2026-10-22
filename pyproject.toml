@@ -1,6 +1,6 @@
 [project]
 name = "weiping-council"
-version = "2.4.1"
+version = "2.5.0"
 description = "Weiping Council multi-LLM deliberation system with 6 protocols: council, debate, red-team, consensus, specialist, tournament"
 requires-python = ">=3.11"
 dependencies = [

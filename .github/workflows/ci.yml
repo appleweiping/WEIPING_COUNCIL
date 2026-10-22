@@ -99,15 +99,8 @@ jobs:
           .\.venv\Scripts\python.exe -m pytest
           tests\test_cli_encoding.py -q -p no:cacheprovider
 
-      - name: Dry-run launcher from a foreign working directory
+      - name: Run one demo query through the CLI
         shell: pwsh
         run: |
-          $env:VC_START_DRY_RUN = "1"
-          Push-Location $env:RUNNER_TEMP
-          try {
-            & cmd.exe /d /c "$env:GITHUB_WORKSPACE\start.cmd"
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
-          finally {
-            Pop-Location
-          }
+          .\.venv\Scripts\python.exe vc.py --demo "Monolith or microservices for a three-person project?"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
