@@ -8,3 +8,4 @@ data/sessions/
 data/model_performance.json
 dist/
 .ruff_cache/
+eval/results/
