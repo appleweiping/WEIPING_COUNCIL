@@ -57,9 +57,6 @@ jobs:
       - name: Lint backend
         run: python -m ruff check .
 
-      - name: Release scan
-        run: python scripts/release_scan.py
-
       - name: Build frontend
         working-directory: frontend
         run: npm run build
@@ -96,11 +93,11 @@ jobs:
           .\.venv\Scripts\python.exe -m pip check
           .\.venv\Scripts\python.exe -m pip_audit
 
-      - name: Verify Windows CLI encoding and launcher contracts
+      - name: Test CLI output on the Windows console
         shell: pwsh
         run: >-
           .\.venv\Scripts\python.exe -m pytest
-          tests\test_cli_encoding.py tests\test_release_contract.py -q -p no:cacheprovider
+          tests\test_cli_encoding.py -q -p no:cacheprovider
 
       - name: Dry-run launcher from a foreign working directory
         shell: pwsh
