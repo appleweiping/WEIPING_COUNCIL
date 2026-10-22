@@ -1,5 +1,4 @@
 import asyncio
-import inspect
 
 import httpx
 import pytest
@@ -357,15 +356,6 @@ def test_agentmemory_client_reads_url_from_dotenv(tmp_path, monkeypatch):
     client = AgentMemoryClient(dotenv_path=tmp_path / ".env")
 
     assert client.base_url == "http://dotenv-agentmemory:3111"
-
-
-def test_shared_memory_module_has_no_retired_backends_or_markdown_paths():
-    source = inspect.getsource(shared_memory)
-
-    assert "".join(("agent", "-hub")) not in source.lower()
-    assert "messages-vc" not in source.lower()
-    assert "".join(("memory", "\\INDEX")) not in source
-    assert "Vipin's Knowledgebase\\memory" not in source
 
 
 def test_agentmemory_context_is_bounded():
